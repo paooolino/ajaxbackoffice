@@ -2,6 +2,7 @@
 require("vendor/autoload.php");
 
 $machine = new \Machine\Machine();
+$machine->addPlugin("Link");
 $machine->addPlugin("Database");
 $machine->plugin("Database")->setupSqlite("sample.db");
 
