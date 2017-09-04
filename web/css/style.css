@@ -32,3 +32,80 @@ main #listtable{height: calc(100% - 60px);}
 	width: 100%;
 	overflow: scroll;
 }
+
+/* buttons */
+.button {
+	display: block;
+	height: 30px;
+	background-color: #ccc;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	border-left: 1px solid #aaa;
+	line-height: 30px;
+	padding: 0px 10px;
+	color: #000 !important;
+	text-decoration: none;
+	font-family: Tahoma, Arial;
+	font-size: 10pt;
+	text-align: center;
+	cursor: pointer;
+	box-sizing: content-box;
+}
+.minibutton {
+	height: 20px;
+	line-height: 20px;	
+	padding: 2px 4px;
+	font-family: monospace;
+	font-size: 10pt;
+	min-width: 16px;
+}
+.button100 {
+	height: 100%;
+}
+.button:hover{
+	background-color: #bbb;
+}
+.active .button{
+	background-color: #fa0;
+}
+
+/* tables */
+table {width:100%;border-collapse:collapse;}
+table th, table td{white-space:nowrap;}
+table th {
+	padding: 8px 3px;
+	background-color: #ccc;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	border-left: 1px solid #aaa;
+	cursor: pointer;
+	font-family: Tahoma, Arial;
+	font-size: 11pt;
+}
+
+table th:hover {
+	background-color: #bbb;
+}
+
+table td {
+	background-color: #eee;
+	border: 1px solid #ccc;
+	padding: 4px 5px;
+	font-family: Tahoma, Arial;
+	font-size: 10pt;
+}
+
+table td.first {
+	padding: 0;
+}
+
+table tr:hover td {
+	background-color: #ddd;
+}
+
+/* pagination */
+.pagination-item{display:block;float:left;}
+.pagination-item input{padding:3px 0;}
+.pagination-item.sep{width:10px;height:100%;}

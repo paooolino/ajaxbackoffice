@@ -25,10 +25,14 @@ $machine->addPage("/{tablename}/list/{p}/", function($machine, $tablename, $p) {
 	$n = 50;
 	$records = $db->find($tablename, "LIMIT ?	OFFSET ?", [$n, ($p - 1) * $n]);
 	$count = $db->countRecords($tablename, "");
-	
+	$maxp = ceil($count / $n);
     return [
         "template" => "admin.php",
         "data" => [
+			"p" => $p,
+			"maxp" => $maxp,
+			"count" => $count,
+			"tablename" => $tablename,
 			"tables" => $tables,
 			"records" => $records,
 			"count" => $count
@@ -44,6 +48,8 @@ $machine->addPage("/{tablename}/{id}/", function($machine, $tablename, $id) {
     return [
         "template" => "admin.php",
         "data" => [
+			"tablename" => $tablename,
+			"id" => $id,
 			"tables" => $tables,
 			"record" => $record
 		]
@@ -79,12 +85,30 @@ $machine->addAction("/api/{tablename}/{id}/", "GET", function($machine, $tablena
 	$machine->setResponseBody(json_encode($data));	
 });
 
-$machine->addAction("/api/record/{tablename}/", "POST", function() {
+$machine->addAction("/api/record/{tablename}/", "POST", function($machine, $tablename) {
 	// add a record
+	$db = $machine->plugin("Database");
+	$db->addItem($tablename, []);
+	$count = $db->countRecords($tablename, "");
+	$n = 50;
+	$maxp = ceil($count / $n);
+	
+	$machine->redirect("/$tablename/list/$maxp/");
 });
 
-$machine->addAction("/api/record/{tablename}/{id}/", "POST", function() {
+$machine->addAction("/api/record/{tablename}/{id}/", "POST", function($machine, $tablename, $id) {
 	// update a record
+	$db = $machine->plugin("Database");
+	$r = $machine->getRequest();
+	
+	$item = $db->load($tablename, $id);
+	foreach ($r["POST"] as $k => $v) {
+		if (isset($item->{$k})) {
+			$item->{$k} = $v;
+		}
+	}
+	$db->update($item);
+	$machine->redirect("/$tablename/list/1/");
 });
 
 $machine->addAction("/api/record/{tablename}/{id}/{field}/", "POST", function() {
