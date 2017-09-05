@@ -31,20 +31,6 @@ class App
 		}
 	}
 	
-	public function upload($tablename, $fieldname, $filearr)
-	{
-		$uploaddir = 'uploads/';
-		$uploadfile = $uploaddir . basename($filearr['name']);
-
-		if (move_uploaded_file($filearr['tmp_name'], $uploadfile)) {
-			//echo "File is valid, and was successfully uploaded.\n";
-			return ["result" => "OK", "filename" => $filearr['name']];
-		} else {
-			//echo "Possible file upload attack!\n";
-		}
-		return ["result" => "KO", "dump" => $filearr];
-	}
-	
 	public function getConfig()
 	{
 		return $this->_config;

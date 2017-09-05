@@ -3,6 +3,7 @@
 html, body{height:100%;}
 
 /* general */
+body{font-family: Tahoma, Arial;}
 .wrapper > * {background-color:#ddd;overflow:hidden;}
 section {height:100%;}
 .buttonbar{height:30px;}
@@ -10,6 +11,7 @@ section {height:100%;}
 .buttonbar-item input{padding:3px 0;}
 .buttonbar-item.sep{width:10px;height:100%;}
 .pad{padding:10px;}
+p{margin:5px 0;}
 
 /* grid layout */
 .wrapper {

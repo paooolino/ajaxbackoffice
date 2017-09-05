@@ -1,10 +1,13 @@
 <?php
 require("vendor/autoload.php");
 
+use Cocur\Slugify\Slugify;
+
 $machine = new \Machine\Machine();
 $machine->addPlugin("App");
 $machine->addPlugin("Link");
 $machine->addPlugin("Database");
+$machine->addPlugin("Upload");
 
 $machine->plugin("Database")->setupSqlite("sample.db");
 $machine->plugin("App")->loadConfig("config.json");
@@ -60,6 +63,16 @@ $machine->addPage("/{tablename}/{id}/", function($machine, $tablename, $id) {
     ];
 });
 
+$machine->addPage("/error/{errtype}/", function($machine, $errtype) {
+	$r = $machine->getRequest();
+	return [
+        "template" => "adminerror.php",
+        "data" => [
+			"errtype" => $errtype
+		]
+    ];
+});
+
 $machine->addAction("/api/tables/", "GET", function($machine) {
 	// list tables
 	$db = $machine->plugin("Database");
@@ -104,6 +117,13 @@ $machine->addAction("/api/record/{tablename}/{id}/", "POST", function($machine, 
 	// update a record
 	$db = $machine->plugin("Database");
 	$app = $machine->plugin("App");
+	$up = $machine->plugin("Upload");
+	
+	if ($up->detectPostMaxSizeExceeded()) {
+		$machine->redirect("/error/too-big/");
+		return;
+	}
+	
 	$r = $machine->getRequest();
 	
 	$item = $db->load($tablename, $id);
@@ -117,12 +137,14 @@ $machine->addAction("/api/record/{tablename}/{id}/", "POST", function($machine, 
 	// file upload
 	foreach ($r["FILES"] as $k => $v) {
 		if (array_key_exists($k, $props)) {
-			$result = $app->upload($tablename, $k, $v);
+			$result = $up->upload($v);
 			if ($result["result"] == "OK") {
 				$item->{$k} = $result["filename"];
 			} else {
-				print_r($result["dump"]);
-				die();
+				$slugify = new Slugify();
+				$errname = $slugify->slugify($result["errname"]);
+				$machine->redirect("/error/" . $errname . "/");
+				return;
 			}
 		}
 	}
