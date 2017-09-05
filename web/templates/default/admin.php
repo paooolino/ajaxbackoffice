@@ -20,16 +20,16 @@
 		<main>
 			<?php if (isset($records)) { ?>
 			<section id="sectionlist">
-				<div class="pagination">
-					<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="pagination-item button minibutton">First</a>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>" class="pagination-item button minibutton">Previous</a>
-					<div class="pagination-item"><input value="<?php echo $p; ?>" /></div>
-					<div class="pagination-item minibutton">/ <?php echo $maxp; ?></div>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>" class="pagination-item button minibutton">Next</a>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($maxp) . "/"); ?>" class="pagination-item button minibutton">Last</a>
-					<div class="pagination-item sep"></div>
+				<div class="buttonbar">
+					<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">First</a>
+					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>" class="buttonbar-item button minibutton">Previous</a>
+					<div class="buttonbar-item"><input value="<?php echo $p; ?>" /></div>
+					<div class="buttonbar-item minibutton">/ <?php echo $maxp; ?></div>
+					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>" class="buttonbar-item button minibutton">Next</a>
+					<a href="<?php echo $Link->Get("/$tablename/list/" . ($maxp) . "/"); ?>" class="buttonbar-item button minibutton">Last</a>
+					<div class="buttonbar-item sep"></div>
 					<form action="<?php echo $Link->Get("/api/record/$tablename/"); ?>" method="post">
-						<button class="pagination-item button minibutton">Add</button>
+						<button class="buttonbar-item button minibutton">Add</button>
 					</form>
 				</div>
 				<div id="listtable">
@@ -67,15 +67,15 @@
 						</table>
 					</div>
 				</div>
-				<div class="pagination">
-					<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="pagination-item button minibutton">First</a>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>" class="pagination-item button minibutton">Previous</a>
-					<div class="pagination-item"><input value="<?php echo $p; ?>" /></div>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>" class="pagination-item button minibutton">Next</a>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($maxp) . "/"); ?>" class="pagination-item button minibutton">Last</a>
-					<div class="pagination-item sep"></div>
+				<div class="buttonbar">
+					<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">First</a>
+					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>" class="buttonbar-item button minibutton">Previous</a>
+					<div class="buttonbar-item"><input value="<?php echo $p; ?>" /></div>
+					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>" class="buttonbar-item button minibutton">Next</a>
+					<a href="<?php echo $Link->Get("/$tablename/list/" . ($maxp) . "/"); ?>" class="buttonbar-item button minibutton">Last</a>
+					<div class="buttonbar-item sep"></div>
 					<form action="<?php echo $Link->Get("/api/record/$tablename/"); ?>" method="post">
-						<button class="pagination-item button minibutton">Add</button>
+						<button class="buttonbar-item button minibutton">Add</button>
 					</form>
 				</div>
 			</section>
@@ -83,17 +83,28 @@
 			<?php if (isset($record)) { ?>
 			<section id="sectiondetail">
 				<form action="<?php echo $Link->Get("/api/record/$tablename/$id/"); ?>" method="post">
-					<?php foreach ($record as $field => $value) { ?>
-					<div class="formrow">
-						<div class="formlabel">
-							<?php echo $field; ?>
-						</div>
-						<div class="formfield">
-							<input name="<?php echo $field; ?>" value="<?php echo $value; ?>">
+					<div class="buttonbar">
+						<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">Back to list</a>
+					</div>
+					<div id="recorddetail">
+						<div class="container">
+							<div class="pad">
+								<?php foreach ($record as $field => $value) { ?>
+								<div class="formrow">
+									<div class="formlabel">
+										<?php echo $field; ?>
+									</div>
+									<div class="formfield">
+										<input name="<?php echo $field; ?>" value="<?php echo $value; ?>">
+									</div>
+								</div>
+								<?php } ?>
+							</div>
 						</div>
 					</div>
-					<?php } ?>
-					<button>Save</button>
+					<div class="buttonbar">
+						<button class="button minibutton">Save</button>
+					</div>
 				</form>
 			</section>
 			<?php } ?>

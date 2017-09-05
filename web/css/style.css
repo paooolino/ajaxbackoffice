@@ -4,6 +4,12 @@ html, body{height:100%;}
 
 /* general */
 .wrapper > * {background-color:#ddd;overflow:hidden;}
+section {height:100%;}
+.buttonbar{height:30px;}
+.buttonbar-item{display:block;float:left;}
+.buttonbar-item input{padding:3px 0;}
+.buttonbar-item.sep{width:10px;height:100%;}
+.pad{padding:10px;}
 
 /* grid layout */
 .wrapper {
@@ -23,8 +29,14 @@ main{grid-area:main;}
 footer{grid-area:foot;}
 
 /* vertical content layout */
-main .pagination{height:30px;}
 main #listtable{height: calc(100% - 60px);}
+#sectiondetail form{height:100%;}
+main #recorddetail{height: calc(100% - 60px);background-color:#eee;}
+
+/* form */
+.formrow{margin-bottom:10px;}
+.formlabel{font-family: monospace;font-size:8pt;font-weight:bold;color:#444;}
+.formfield input{width:80%;padding:4px;color:#666;border:1px solid #ccc;}
 
 /* container style */
 .container {
@@ -104,8 +116,3 @@ table td.first {
 table tr:hover td {
 	background-color: #ddd;
 }
-
-/* pagination */
-.pagination-item{display:block;float:left;}
-.pagination-item input{padding:3px 0;}
-.pagination-item.sep{width:10px;height:100%;}

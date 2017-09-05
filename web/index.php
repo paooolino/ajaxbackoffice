@@ -13,6 +13,7 @@ $machine->addPage("/", function($machine) {
     return [
         "template" => "admin.php",
         "data" => [
+			"tablename" => "",
 			"tables" => $tables
 		]
     ];
