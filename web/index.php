@@ -2,9 +2,12 @@
 require("vendor/autoload.php");
 
 $machine = new \Machine\Machine();
+$machine->addPlugin("App");
 $machine->addPlugin("Link");
 $machine->addPlugin("Database");
+
 $machine->plugin("Database")->setupSqlite("sample.db");
+$machine->plugin("App")->loadConfig("config.json");
 
 $machine->addPage("/", function($machine) {
 	$db = $machine->plugin("Database");
@@ -100,14 +103,30 @@ $machine->addAction("/api/record/{tablename}/", "POST", function($machine, $tabl
 $machine->addAction("/api/record/{tablename}/{id}/", "POST", function($machine, $tablename, $id) {
 	// update a record
 	$db = $machine->plugin("Database");
+	$app = $machine->plugin("App");
 	$r = $machine->getRequest();
 	
 	$item = $db->load($tablename, $id);
+	$props = $item->getProperties();
 	foreach ($r["POST"] as $k => $v) {
-		if (isset($item->{$k})) {
+		if (array_key_exists($k, $props)) {
 			$item->{$k} = $v;
 		}
 	}
+	
+	// file upload
+	foreach ($r["FILES"] as $k => $v) {
+		if (array_key_exists($k, $props)) {
+			$result = $app->upload($tablename, $k, $v);
+			if ($result["result"] == "OK") {
+				$item->{$k} = $result["filename"];
+			} else {
+				print_r($result["dump"]);
+				die();
+			}
+		}
+	}
+	
 	$db->update($item);
 	$machine->redirect("/$tablename/list/1/");
 });

@@ -22,10 +22,18 @@
 			<section id="sectionlist">
 				<div class="buttonbar">
 					<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">First</a>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>" class="buttonbar-item button minibutton">Previous</a>
+					<a 
+						<?php if ($p > 1) { ?>href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>"<?php } ?>
+						class="buttonbar-item button minibutton <?php if ($p <= 1) { ?>disabled<?php } ?>">
+							Previous
+					</a>
 					<div class="buttonbar-item"><input value="<?php echo $p; ?>" /></div>
 					<div class="buttonbar-item minibutton">/ <?php echo $maxp; ?></div>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>" class="buttonbar-item button minibutton">Next</a>
+					<a 
+						<?php if ($p < $maxp) { ?>href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>"<?php } ?>
+						class="buttonbar-item button minibutton <?php if ($p >= $maxp) { ?>disabled<?php } ?>">
+							Next
+					</a>
 					<a href="<?php echo $Link->Get("/$tablename/list/" . ($maxp) . "/"); ?>" class="buttonbar-item button minibutton">Last</a>
 					<div class="buttonbar-item sep"></div>
 					<form action="<?php echo $Link->Get("/api/record/$tablename/"); ?>" method="post">
@@ -69,9 +77,18 @@
 				</div>
 				<div class="buttonbar">
 					<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">First</a>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>" class="buttonbar-item button minibutton">Previous</a>
+					<a 
+						<?php if ($p > 1) { ?>href="<?php echo $Link->Get("/$tablename/list/" . ($p - 1) . "/"); ?>"<?php } ?>
+						class="buttonbar-item button minibutton <?php if ($p <= 1) { ?>disabled<?php } ?>">
+							Previous
+					</a>
 					<div class="buttonbar-item"><input value="<?php echo $p; ?>" /></div>
-					<a href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>" class="buttonbar-item button minibutton">Next</a>
+					<div class="buttonbar-item minibutton">/ <?php echo $maxp; ?></div>
+					<a 
+						<?php if ($p < $maxp) { ?>href="<?php echo $Link->Get("/$tablename/list/" . ($p + 1) . "/"); ?>"<?php } ?>
+						class="buttonbar-item button minibutton <?php if ($p >= $maxp) { ?>disabled<?php } ?>">
+							Next
+					</a>
 					<a href="<?php echo $Link->Get("/$tablename/list/" . ($maxp) . "/"); ?>" class="buttonbar-item button minibutton">Last</a>
 					<div class="buttonbar-item sep"></div>
 					<form action="<?php echo $Link->Get("/api/record/$tablename/"); ?>" method="post">
@@ -82,7 +99,7 @@
 			<?php } ?>
 			<?php if (isset($record)) { ?>
 			<section id="sectiondetail">
-				<form action="<?php echo $Link->Get("/api/record/$tablename/$id/"); ?>" method="post">
+				<form action="<?php echo $Link->Get("/api/record/$tablename/$id/"); ?>" method="post" enctype="multipart/form-data">
 					<div class="buttonbar">
 						<a href="<?php echo $Link->Get("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">Back to list</a>
 					</div>
@@ -95,7 +112,7 @@
 										<?php echo $field; ?>
 									</div>
 									<div class="formfield">
-										<input name="<?php echo $field; ?>" value="<?php echo $value; ?>">
+										<?php echo $App->renderField($tablename, $field, $value); ?>
 									</div>
 								</div>
 								<?php } ?>

@@ -64,6 +64,7 @@ main #recorddetail{height: calc(100% - 60px);background-color:#eee;}
 	cursor: pointer;
 	box-sizing: content-box;
 }
+.button.disabled {background-color: #ddd;color:#666 !important;}
 .minibutton {
 	height: 20px;
 	line-height: 20px;	
@@ -77,6 +78,9 @@ main #recorddetail{height: calc(100% - 60px);background-color:#eee;}
 }
 .button:hover{
 	background-color: #bbb;
+}
+.button.disabled:hover{
+	background-color: #ddd;
 }
 .active .button{
 	background-color: #fa0;
@@ -111,6 +115,7 @@ table td {
 
 table td.first {
 	padding: 0;
+	width: 50px;
 }
 
 table tr:hover td {
