@@ -43,7 +43,11 @@ class Image
 		}
 		$filename_big = $big_dir . basename($filename);
 		if (!file_exists($filename_big)) {
-			$image = $this->_imageManager->make($filename);
+			try {
+				$image = $this->_imageManager->make($filename);
+			} catch(\Exception $exc) {
+				return false;
+			}
 			$w = $new_w = $image->width();
 			$h = $new_h = $image->height();
 			if ($w > $this->_maxW) {
@@ -51,7 +55,7 @@ class Image
 				$new_h = ($h * $new_w) / $w; 
 			}
 			if ($new_h > $this->_maxH) {
-				$new_h = $this->maxH;
+				$new_h = $this->_maxH;
 				$new_w = ($new_h * $w) / $h;
 			}
 			// load
@@ -68,7 +72,11 @@ class Image
 			}
 			$filename_thumb = $thumbsdir . basename($filename);
 			if (!file_exists($filename_thumb)) {
-				$image = $this->_imageManager->make($filename_big);
+				try {
+					$image = $this->_imageManager->make($filename_big);
+				} catch(\Exception $exc) {
+					return false;
+				}
 				$w = $image->width();
 				$h = $image->height();
 				if ($dest_h == "H" && is_int($dest_w)) {

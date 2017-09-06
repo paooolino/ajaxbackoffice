@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d2e286eab672a7eab2c3e81a4d66daf7",
+    "hash": "5e5b51aafca927d28de4ecd24c4b757d",
     "content-hash": "3c581d8730df3d3f917509e4c9059cd0",
     "packages": [
         {
@@ -253,17 +253,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/paooolino/Machine.git",
-                "reference": "e85381bbdb9a014abee9b6c3b2548e7b5e560712"
+                "reference": "0122a3ec2cac1bce146afc26a9a374b5acd78495"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paooolino/Machine/zipball/e85381bbdb9a014abee9b6c3b2548e7b5e560712",
-                "reference": "e85381bbdb9a014abee9b6c3b2548e7b5e560712",
+                "url": "https://api.github.com/repos/paooolino/Machine/zipball/0122a3ec2cac1bce146afc26a9a374b5acd78495",
+                "reference": "0122a3ec2cac1bce146afc26a9a374b5acd78495",
                 "shasum": ""
             },
             "require": {
                 "cocur/slugify": "^2.5",
                 "gabordemooij/redbean": "^4.3",
+                "intervention/image": "^2.4",
                 "ramsey/uuid": "^3.6"
             },
             "require-dev": {
@@ -287,7 +288,7 @@
                 }
             ],
             "homepage": "https://github.com/paooolino/Machine",
-            "time": "2017-09-04 12:43:40"
+            "time": "2017-09-06 20:33:30"
         },
         {
             "name": "paragonie/random_compat",

@@ -62,10 +62,20 @@
 									$first = true;
 									foreach ($r as $fieldname => $fieldvalue) {
 										if ($first) {
-											?><td class="first"><a href="<?php echo $Link->Get("/$tablename/" . $fieldvalue . "/"); ?>" class="button minibutton button100"><?php echo $fieldvalue; ?></a></td><?php
+											?>
+											<td class="first">
+												<a href="<?php echo $Link->Get("/$tablename/" . $fieldvalue . "/"); ?>" class="button minibutton button100">
+													<?php echo $fieldvalue; ?>
+												</a>
+											</td>
+											<?php
 											$first = false;
 										} else {
-											?><td><?php echo $fieldvalue; ?></td><?php
+											?>
+											<td>
+												<?php $App->renderFieldInList($tablename, $fieldname, $fieldvalue); ?>
+											</td>
+											<?php
 										}
 									} 
 									?>
@@ -112,7 +122,7 @@
 										<?php echo $field; ?>
 									</div>
 									<div class="formfield">
-										<?php echo $App->renderField($tablename, $field, $value); ?>
+										<?php $App->renderField($tablename, $field, $value); ?>
 									</div>
 								</div>
 								<?php } ?>

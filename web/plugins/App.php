@@ -18,13 +18,42 @@ class App
 		}
 	}
 	
+	public function renderFieldInList($tablename, $fieldname, $fieldvalue)
+	{
+		$type = $this->_getFieldType($tablename, $fieldname);
+		switch ($type) {
+			case "image":
+				if ($fieldvalue != "") {
+					$image = $this->_machine->plugin("Image")->Get([$fieldvalue, "W", 32]);
+					if ($image) {
+						echo '<img src="' . $image . '">';
+					} else {
+						echo $fieldvalue;
+					}
+				}
+				break;
+			
+			case "textarea":
+				echo nl2br($fieldvalue);
+				break;
+
+			case "code":
+				echo nl2br($fieldvalue);
+				break;			
+				
+			default:	// default is "text"
+				echo $fieldvalue;
+				break;			
+		}
+	}
+	
 	public function renderField($tablename, $fieldname, $fieldvalue)
 	{
 		$type = $this->_getFieldType($tablename, $fieldname);
 		switch ($type) {
 			case "image":
 				if ($fieldvalue != "") {
-					$image = $this->_machine->plugin("Image")->Get([$fieldvalue, "W", 64]);
+					$image = $this->_machine->plugin("Image")->Get([$fieldvalue, "W", 128]);
 					echo '<div><img src="' . $image . '"><div>';
 				}
 				echo '<input type="file" name="' . $fieldname . '">';
@@ -39,7 +68,7 @@ class App
 				break;			
 				
 			default:	// default is "text"
-				echo '<input ' . (($fieldname == "id") ? "disabled" : "") . ' name="' . $fieldname . '" value="' . $fieldvalue . '">';
+				echo '<input ' . (($fieldname == "id") ? "disabled" : "") . ' name="' . $fieldname . '" value="' . htmlentities($fieldvalue) . '">';
 				break;			
 		}
 	}
