@@ -3,5 +3,10 @@
 		"picture": {
 			"type": "image"
 		}
+	},
+	"genres": {
+		"description": {
+			"type": "textarea"
+		}
 	}
 }

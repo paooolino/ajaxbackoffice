@@ -34,16 +34,17 @@ class Upload
 	public function upload($filearr)
 	{
 		if ($filearr["error"] == 0) {
-			if (!file_exists($this->_uploadpath)) {
-				mkdir($this->_uploadpath, 0777, true);
+			$uploadpath = $this->_uploadpath . date("d-m-Y") . "/";
+			if (!file_exists($uploadpath)) {
+				mkdir($uploadpath, 0777, true);
 			}
-			$uploadfile = $this->_uploadpath . basename($filearr['name']);
+			$uploadfile = $uploadpath . basename($filearr['name']);
 			$file_info = pathinfo($uploadfile);
 			
 			$n = 1;
 			while (file_exists($uploadfile)) {
 				$newname = $file_info["filename"] . "_" . $n . "." . $file_info["extension"]; 
-				$uploadfile = $this->_uploadpath . $newname;
+				$uploadfile = $uploadpath . $newname;
 				$n++;
 			}
 			
@@ -77,5 +78,3 @@ class Upload
 		return $errors[$errno];
 	}
 }
-
-

@@ -23,8 +23,21 @@ class App
 		$type = $this->_getFieldType($tablename, $fieldname);
 		switch ($type) {
 			case "image":
+				if ($fieldvalue != "") {
+					$image = $this->_machine->plugin("Image")->Get([$fieldvalue, "W", 64]);
+					echo '<div><img src="' . $image . '"><div>';
+				}
 				echo '<input type="file" name="' . $fieldname . '">';
 				break;
+			
+			case "textarea":
+				echo '<textarea name="' . $fieldname . '">' . $fieldvalue . '</textarea>';
+				break;		
+
+			case "code":
+				echo '<textarea class="code" name="' . $fieldname . '">' . $fieldvalue . '</textarea>';
+				break;			
+				
 			default:	// default is "text"
 				echo '<input ' . (($fieldname == "id") ? "disabled" : "") . ' name="' . $fieldname . '" value="' . $fieldvalue . '">';
 				break;			

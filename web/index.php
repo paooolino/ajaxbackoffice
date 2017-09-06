@@ -8,6 +8,7 @@ $machine->addPlugin("App");
 $machine->addPlugin("Link");
 $machine->addPlugin("Database");
 $machine->addPlugin("Upload");
+$machine->addPlugin("Image");
 
 $machine->plugin("Database")->setupSqlite("sample.db");
 $machine->plugin("App")->loadConfig("config.json");
@@ -136,15 +137,17 @@ $machine->addAction("/api/record/{tablename}/{id}/", "POST", function($machine, 
 	
 	// file upload
 	foreach ($r["FILES"] as $k => $v) {
-		if (array_key_exists($k, $props)) {
-			$result = $up->upload($v);
-			if ($result["result"] == "OK") {
-				$item->{$k} = $result["filename"];
-			} else {
-				$slugify = new Slugify();
-				$errname = $slugify->slugify($result["errname"]);
-				$machine->redirect("/error/" . $errname . "/");
-				return;
+		if ($v["error"] != 4) {
+			if (array_key_exists($k, $props)) {
+				$result = $up->upload($v);
+				if ($result["result"] == "OK") {
+					$item->{$k} = $result["filename"];
+				} else {
+					$slugify = new Slugify();
+					$errname = $slugify->slugify($result["errname"]);
+					$machine->redirect("/error/" . $errname . "/");
+					return;
+				}
 			}
 		}
 	}
