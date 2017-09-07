@@ -91,6 +91,7 @@ main #recorddetail{height: calc(100% - 60px);background-color:#eee;}
 
 /* tables */
 table {width:100%;border-collapse:collapse;}
+table tr{height:40px;}
 table th, table td{white-space:nowrap;}
 table th {
 	padding: 8px 3px;
@@ -119,9 +120,10 @@ table td {
 table td.first {
 	padding: 0;
 	width: 50px;
-	height: 1px;
+	height: 43px;
 }
+table td.first a{line-height:40px;padding:0;}
 
 table tr:hover td {
-	background-color: #ddd;
+	background-color: #e6e6e6;
 }

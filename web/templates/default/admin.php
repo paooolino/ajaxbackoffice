@@ -57,7 +57,7 @@
 							</thead>
 							<tbody>
 								<?php foreach($records as $id => $r) { ?>
-								<tr>
+								<tr id="row<?php echo $id;?>">
 									<?php 
 									$first = true;
 									foreach ($r as $fieldname => $fieldvalue) {

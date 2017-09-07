@@ -153,7 +153,10 @@ $machine->addAction("/api/record/{tablename}/{id}/", "POST", function($machine, 
 	}
 	
 	$db->update($item);
-	$machine->redirect("/$tablename/list/1/");
+	
+	$rowindex = $db->countRecords($tablename, "WHERE id < ?", [$id]) + 1;
+	$page = ceil(($rowindex) / 50);
+	$machine->redirect("/$tablename/list/$page/#row$id");
 });
 
 $machine->addAction("/api/record/{tablename}/{id}/{field}/", "POST", function() {
