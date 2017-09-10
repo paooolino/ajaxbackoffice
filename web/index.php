@@ -1,5 +1,6 @@
 <?php
 require("vendor/autoload.php");
+require("../src/Backoffice.php");
 
 use Cocur\Slugify\Slugify;
 
