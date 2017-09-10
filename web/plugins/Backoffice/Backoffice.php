@@ -1,5 +1,5 @@
 <?php
-namespace Plugin;
+namespace Machine\Plugin;
 
 class Backoffice
 {
@@ -159,7 +159,7 @@ class Backoffice
 			$tables = $db->getTables();
 			
 			return [
-				"template" => "admin.php",
+				"template" => __DIR__ . "/template/admin.php",
 				"data" => [
 					"tablename" => "",
 					"tables" => $tables
@@ -176,7 +176,7 @@ class Backoffice
 			$count = $db->countRecords($tablename, "");
 			$maxp = ceil($count / $n);
 			return [
-				"template" => "admin.php",
+				"template" => __DIR__ . "/template/admin.php",
 				"data" => [
 					"p" => $p,
 					"maxp" => $maxp,
@@ -195,7 +195,7 @@ class Backoffice
 			$record = $db->load($tablename, $id);
 			
 			return [
-				"template" => "admin.php",
+				"template" => __DIR__ . "/template/admin.php",
 				"data" => [
 					"tablename" => $tablename,
 					"id" => $id,
@@ -208,7 +208,7 @@ class Backoffice
 		$machine->addPage($prefixdir . "/error/{errtype}/", function($machine, $errtype) {
 			$r = $machine->getRequest();
 			return [
-				"template" => "adminerror.php",
+				"template" => __DIR__ . "/template/adminerror.php",
 				"data" => [
 					"errtype" => $errtype
 				]
