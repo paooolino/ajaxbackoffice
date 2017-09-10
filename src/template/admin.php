@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<link rel="stylesheet" href="{{templatePath}}../../css/style.css" type="text/css">
+	<link rel="stylesheet" href="{{Backoffice|templatePath}}css/style.css" type="text/css">
 </head>
 <body>
 	<div class="wrapper">
@@ -140,6 +140,5 @@
 			footer
 		</footer>
 	</div>
-	<script src="bundle.js"></script>
 </body>
 </html>

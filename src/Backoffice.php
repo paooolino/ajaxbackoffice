@@ -26,6 +26,12 @@ class Backoffice
 		}
 	}
 	
+	public function templatePath($params)
+	{
+		$r = $this->_machine->getRequest();
+		return "//" . $r["SERVER"]["HTTP_HOST"] . "/vendor/paooolino/machine-backoffice-plugin/src/template/";
+	}
+	
 	public function LinkGet($params)
 	{
         if (gettype($params) == "string") {

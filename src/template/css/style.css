@@ -1,0 +1,129 @@
+/* reset */
+*{padding:0;margin:0;}
+html, body{height:100%;}
+
+/* general */
+body{font-family: Tahoma, Arial;}
+.wrapper > * {background-color:#ddd;overflow:hidden;}
+section {height:100%;}
+.buttonbar{height:30px;}
+.buttonbar-item{display:block;float:left;}
+.buttonbar-item input{padding:3px 0;}
+.buttonbar-item.sep{width:10px;height:100%;}
+.pad{padding:10px;}
+p{margin:5px 0;}
+
+/* grid layout */
+.wrapper {
+	display: grid;
+	height: 100%;
+	grid-gap: 10px;
+	grid-template-columns: 250px 1fr;
+	grid-template-rows: 40px 1fr 40px;
+	grid-template-areas:	"head head"
+							"nav  main"
+							"foot foot";
+}
+
+header{grid-area:head;}
+nav{grid-area:nav;}
+main{grid-area:main;}
+footer{grid-area:foot;}
+
+/* vertical content layout */
+main #listtable{height: calc(100% - 60px);}
+#sectiondetail form{height:100%;}
+main #recorddetail{height: calc(100% - 60px);background-color:#eee;}
+
+/* form */
+.formrow{margin-bottom:10px;}
+.formlabel{font-family: monospace;font-size:8pt;font-weight:bold;color:#444;}
+.formfield input, .formfield textarea{width:80%;padding:4px;color:#666;border:1px solid #ccc;}
+.formfield textarea {height:300px;}
+
+/* container style */
+.container {
+	height: 100%;
+	width: 100%;
+	overflow: scroll;
+}
+
+/* buttons */
+.button {
+	display: block;
+	height: 30px;
+	background-color: #ccc;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	border-left: 1px solid #aaa;
+	line-height: 30px;
+	padding: 0px 10px;
+	color: #000 !important;
+	text-decoration: none;
+	font-family: Tahoma, Arial;
+	font-size: 10pt;
+	text-align: center;
+	cursor: pointer;
+	box-sizing: content-box;
+}
+.button.disabled {background-color: #ddd;color:#666 !important;}
+.minibutton {
+	height: 20px;
+	line-height: 20px;	
+	padding: 2px 4px;
+	font-family: monospace;
+	font-size: 10pt;
+	min-width: 16px;
+}
+.button100 {
+	height: 100%;
+}
+.button:hover{
+	background-color: #bbb;
+}
+.button.disabled:hover{
+	background-color: #ddd;
+}
+.active .button{
+	background-color: #fa0;
+}
+
+/* tables */
+table {width:100%;border-collapse:collapse;}
+table tr{height:40px;}
+table th, table td{white-space:nowrap;}
+table th {
+	padding: 8px 3px;
+	background-color: #ccc;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	border-left: 1px solid #aaa;
+	cursor: pointer;
+	font-family: Tahoma, Arial;
+	font-size: 11pt;
+}
+
+table th:hover {
+	background-color: #bbb;
+}
+
+table td {
+	background-color: #eee;
+	border: 1px solid #ccc;
+	padding: 4px 5px;
+	font-family: Tahoma, Arial;
+	font-size: 10pt;
+}
+
+table td.first {
+	padding: 0;
+	width: 50px;
+	height: 43px;
+}
+table td.first a{line-height:40px;padding:0;}
+
+table tr:hover td {
+	background-color: #e6e6e6;
+}
