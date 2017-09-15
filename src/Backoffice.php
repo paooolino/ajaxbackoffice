@@ -13,7 +13,13 @@ class Backoffice
 		$this->_prefixDir = "";
     }
 
-	// example: "/backoffice"
+    /**
+     * Set the prefix for plugin routes.
+     *
+     * @param string $prefixdir The directory to prefix, with initial slash and without trailing slash.
+     *
+     * @return void
+     */
 	private function _setPrefixDir($prefixdir)
 	{
 		$this->_prefixDir = $prefixdir;
@@ -25,7 +31,14 @@ class Backoffice
 			$this->_config = json_decode(file_get_contents($config_file), true);
 		}
 	}
-	
+
+    /**
+     * Return the absolute url for a plugin asset.
+     *
+     * @param string|array $params The relative path to the asset file (e.g. css/style.css)
+     *
+     * @return string The asset path.
+     */	
 	public function Asset($params)
 	{
         if (gettype($params) == "string") {
@@ -36,15 +49,15 @@ class Backoffice
 		return $Link->Get($this->_prefixDir . "/assets/" . $filename);
 	}
 	
-	public function LinkGet($params)
-	{
-        if (gettype($params) == "string") {
-            $params = [$params];
-        }
-		$path = $params[0];
-		return $this->_machine->plugin("Link")->Get([$this->_prefixDir . $path]);
-	}
-	
+    /**
+     * Echoes a field value in the record list table cell.
+     *
+     * @param string $tablename
+     * @param string $fieldname
+     * @param string $fieldvalue
+     *
+     * @return void
+     */	
 	public function renderFieldInList($tablename, $fieldname, $fieldvalue)
 	{
 		$type = $this->_getFieldType($tablename, $fieldname);
@@ -85,6 +98,15 @@ class Backoffice
 		}
 	}
 	
+    /**
+     * Echoes a field input in the edit form.
+     *
+     * @param string $tablename
+     * @param string $fieldname
+     * @param string $fieldvalue
+     *
+     * @return void
+     */	
 	public function renderField($tablename, $fieldname, $fieldvalue)
 	{
 		$type = $this->_getFieldType($tablename, $fieldname);
@@ -123,11 +145,26 @@ class Backoffice
 		}
 	}
 	
+    /**
+     * Return the current plugin configuration.
+     *
+     * @return array
+     */	
 	public function getConfig()
 	{
 		return $this->_config;
 	}
 	
+    /**
+     * Plugin setup.
+	 *
+	 * This function must be called before running the application.
+     *
+     * @param string $config_file The .json file containing the pluign configuration
+     * @param string $prefixdir The prefix for the plugin routes (e.g. /backoffice)
+     *
+     * @return void
+     */	
 	public function run($config_file, $prefixdir = "")
 	{
 		$this->_loadConfig($config_file);
@@ -135,6 +172,15 @@ class Backoffice
 		$this->_setRoutes();
 	}
 	
+    /**
+     * Gets the first textual field in a table.
+	 *
+	 * This is used to populate the select linkiung a joined table.
+     *
+     * @param string $table
+     *
+     * @return void
+     */	
 	private function _getFirstTextualField($table)
 	{
 		$db = $this->_machine->plugin("Database");
