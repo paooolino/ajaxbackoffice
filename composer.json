@@ -6,9 +6,6 @@
             "email": "paooolino@gmail.com"
         }
     ],
-    "require": {
-        "intervention/image": "^2.4"
-    },
 	"license": "Apache 2.0",
     "autoload": {
         "psr-4": {
@@ -18,9 +15,9 @@
     "scripts": {
         "phpcs": ["phpcs src", "phpcs plugins"],
         "phpcbf": ["phpcbf src", "phpcbf plugins"],
-	"generatedoc": "php phpDocumentor.phar -d src,plugins -t docs",
-	"phpunit": "phpunit tests/machine --whitelist src --coverage-html coverage/machine",
-	"phpunit_plugins": "phpunit tests/plugins --whitelist plugins --coverage-html coverage/plugins",
-	"start": "php -S localhost:8000 -t example"
+		"generatedoc": "php phpDocumentor.phar -d src,plugins -t docs",
+		"phpunit": "phpunit tests/machine --whitelist src --coverage-html coverage/machine",
+		"phpunit_plugins": "phpunit tests/plugins --whitelist plugins --coverage-html coverage/plugins",
+		"start": "php -S localhost:8000 -t example"
     }
 }

@@ -26,9 +26,13 @@ class Backoffice
 		}
 	}
 	
-	public function Asset($filename)
+	public function Asset($params)
 	{
-		$Link = $machine->plugin("Link");
+        if (gettype($params) == "string") {
+            $params = [$params];
+        }
+		$filename = $params[0];
+		$Link = $this->_machine->plugin("Link");
 		return $Link->Get($this->_prefixDir . "/assets/" . $filename);
 	}
 	
@@ -173,10 +177,10 @@ class Backoffice
 			];
 		});
 
-		$machine->addAction($prefixdir . "/assets/{filename:.+}", function($machine, $filename) {
+		$machine->addAction($prefixdir . "/assets/{filename:.+}", "GET", function($machine, $filename) {
 			$serverpath = __DIR__ . "/template/" . $filename;
 			$machine->serve($serverpath);
-		}
+		});
 		
 		$machine->addPage($prefixdir . "/{tablename}/list/{p}/", function($machine, $tablename, $p) {
 			$db = $machine->plugin("Database");
@@ -200,22 +204,6 @@ class Backoffice
 			];
 		});
 
-		$machine->addPage($prefixdir . "/{tablename}/{id}/", function($machine, $tablename, $id) {
-			$db = $machine->plugin("Database");
-			$tables = $db->getTables();
-			$record = $db->load($tablename, $id);
-			
-			return [
-				"template" => __DIR__ . "/template/admin.php",
-				"data" => [
-					"tablename" => $tablename,
-					"id" => $id,
-					"tables" => $tables,
-					"record" => $record
-				]
-			];
-		});
-
 		$machine->addPage($prefixdir . "/error/{errtype}/", function($machine, $errtype) {
 			$r = $machine->getRequest();
 			return [
@@ -233,6 +221,22 @@ class Backoffice
 			
 			$machine->setResponseCode(200);
 			$machine->setResponseBody(json_encode($data));
+		});
+		
+		$machine->addPage($prefixdir . "/{tablename}/{id}/", function($machine, $tablename, $id) {
+			$db = $machine->plugin("Database");
+			$tables = $db->getTables();
+			$record = $db->load($tablename, $id);
+			
+			return [
+				"template" => __DIR__ . "/template/admin.php",
+				"data" => [
+					"tablename" => $tablename,
+					"id" => $id,
+					"tables" => $tables,
+					"record" => $record
+				]
+			];
 		});
 
 		$machine->addAction($prefixdir . "/api/{tablename}/list/{p}/{n}/", "GET", function($machine, $tablename, $p, $n) {
