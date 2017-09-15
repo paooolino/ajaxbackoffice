@@ -32,6 +32,16 @@ class Backoffice
 		}
 	}
 
+	public function GetLink($params)
+	{
+        if (gettype($params) == "string") {
+            $params = [$params];
+        }
+		$slug = $params[0];
+		$Link = $this->_machine->plugin("Link");
+		return $Link->Get($this->_prefixDir . $slug);
+	}
+	
     /**
      * Return the absolute url for a plugin asset.
      *
