@@ -26,10 +26,10 @@ class Backoffice
 		}
 	}
 	
-	public function templatePath($params)
+	public function Asset($filename)
 	{
-		$r = $this->_machine->getRequest();
-		return "//" . $r["SERVER"]["HTTP_HOST"] . "/vendor/paooolino/machine-backoffice-plugin/src/template/";
+		$Link = $machine->plugin("Link");
+		return $Link->Get($this->_prefixDir . "/assets/" . $filename);
 	}
 	
 	public function LinkGet($params)
@@ -173,6 +173,11 @@ class Backoffice
 			];
 		});
 
+		$machine->addAction($prefixdir . "/assets/{filename:.+}", function($machine, $filename) {
+			$serverpath = __DIR__ . "/template/" . $filename;
+			$machine->serve($serverpath);
+		}
+		
 		$machine->addPage($prefixdir . "/{tablename}/list/{p}/", function($machine, $tablename, $p) {
 			$db = $machine->plugin("Database");
 			$tables = $db->getTables();
