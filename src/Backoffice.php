@@ -76,19 +76,19 @@ class Backoffice
 				if ($fieldvalue != "") {
 					$image = $this->_machine->plugin("Image")->Get([$fieldvalue, "W", 32]);
 					if ($image) {
-						echo '<img src="' . $image . '">';
+						return '<img src="' . $image . '">';
 					} else {
-						echo $fieldvalue;
+						return $fieldvalue;
 					}
 				}
 				break;
 			
 			case "textarea":
-				echo nl2br($fieldvalue);
+				return nl2br($fieldvalue);
 				break;
 
 			case "code":
-				echo nl2br($fieldvalue);
+				return nl2br($fieldvalue);
 				break;			
 				
 			default:	// default is "text". may be a relation.
@@ -103,7 +103,7 @@ class Backoffice
 					//$fieldvalue = '<a href="' . $url . '" class="relationlink">' . $fieldvalue . '</a> ' . $extern_name;
 					$fieldvalue = $fieldvalue . " (" . $extern_name . ")";
 				}
-				echo $fieldvalue;
+				return $fieldvalue;
 				break;			
 		}
 	}
@@ -182,6 +182,29 @@ class Backoffice
 		$this->_setRoutes();
 	}
 	
+	/**
+	 * Get an array of table names and returns a key-value array with table
+	 * names and their label
+	 *
+	 * @param array $dbtables
+	 *
+	 * @return array
+	 */
+	public function filterTables($dbtables)
+	{
+		$return_tables = [];
+		foreach ($dbtables as $d) {
+			if (isset($this->_config["nav"])) {
+				if (isset($this->_config["nav"][$d])) {
+					$return_tables[$d] = $this->_config["nav"][$d];
+				}
+			} else {
+				$return_tables[$d] = $d;
+			}
+		}
+		return $return_tables;
+	}
+	
     /**
      * Gets the first textual field in a table.
 	 *
@@ -206,11 +229,12 @@ class Backoffice
 	private function _getFieldType($tablename, $fieldname)
 	{
 		if (
-			isset($this->_config[$tablename])
-			&& isset($this->_config[$tablename][$fieldname])
-			&& isset($this->_config[$tablename][$fieldname]["type"])
+			isset($this->_config["fields"])
+			&& isset($this->_config["fields"][$tablename])
+			&& isset($this->_config["fields"][$tablename][$fieldname])
+			&& isset($this->_config["fields"][$tablename][$fieldname]["type"])
 		) {
-			return $this->_config[$tablename][$fieldname]["type"];
+			return $this->_config["fields"][$tablename][$fieldname]["type"];
 		}
 		return "text";
 	}
@@ -222,7 +246,7 @@ class Backoffice
 		
 		$machine->addPage($prefixdir . "/", function($machine) {
 			$db = $machine->plugin("Database");
-			$tables = $db->getTables();
+			$tables = $this->filterTables($db->getTables());
 			
 			return [
 				"template" => __DIR__ . "/template/admin.php",

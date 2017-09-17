@@ -1,0 +1,18 @@
+{
+	"nav": {
+		"customers": "Clienti",
+		"employees": "Impiegati"
+	},
+	"fields": {
+		"artists": {
+			"picture": {
+				"type": "image"
+			}
+		},
+		"genres": {
+			"description": {
+				"type": "textarea"
+			}
+		}
+	}
+}

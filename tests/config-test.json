@@ -1,0 +1,14 @@
+{
+	"fields": {
+		"artists": {
+			"picture": {
+				"type": "image"
+			}
+		},
+		"genres": {
+			"description": {
+				"type": "textarea"
+			}
+		}
+	}
+}

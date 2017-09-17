@@ -16,8 +16,7 @@
         "phpcs": ["phpcs src", "phpcs plugins"],
         "phpcbf": ["phpcbf src", "phpcbf plugins"],
 		"generatedoc": "php phpDocumentor.phar -d src,plugins -t docs",
-		"phpunit": "phpunit tests/machine --whitelist src --coverage-html coverage/machine",
-		"phpunit_plugins": "phpunit tests/plugins --whitelist plugins --coverage-html coverage/plugins",
+		"phpunit": "phpunit tests --whitelist src/Backoffice.php --coverage-html coverage",
 		"start": "php -S localhost:8000 -t example"
     }
 }
