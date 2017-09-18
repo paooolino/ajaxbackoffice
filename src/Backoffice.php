@@ -264,7 +264,7 @@ class Backoffice
 		
 		$machine->addPage($prefixdir . "/{tablename}/list/{p}/", function($machine, $tablename, $p) {
 			$db = $machine->plugin("Database");
-			$tables = $db->getTables();
+			$tables = $this->filterTables($db->getTables());
 			
 			$n = 50;
 			$records = $db->find($tablename, "LIMIT ?	OFFSET ?", [$n, ($p - 1) * $n]);
@@ -297,7 +297,7 @@ class Backoffice
 		$machine->addAction($prefixdir . "/api/tables/", "GET", function($machine) {
 			// list tables
 			$db = $machine->plugin("Database");
-			$data = $db->getTables();
+			$tables = $this->filterTables($db->getTables());
 			
 			$machine->setResponseCode(200);
 			$machine->setResponseBody(json_encode($data));
@@ -305,7 +305,7 @@ class Backoffice
 		
 		$machine->addPage($prefixdir . "/{tablename}/{id}/", function($machine, $tablename, $id) {
 			$db = $machine->plugin("Database");
-			$tables = $db->getTables();
+			$tables = $this->filterTables($db->getTables());
 			$record = $db->load($tablename, $id);
 			
 			return [
