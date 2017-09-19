@@ -49,10 +49,14 @@
 									foreach ($records as $id => $r) {
 										foreach ($r as $fieldname => $fieldvalue) {
 											$orderlink = $Backoffice->GetLink("/$tablename/$fieldname/updateordeorder/");
+											$filterlink = $Backoffice->GetLink("/$tablename/$fieldname/updatefilter/");
 											?>
 											<th>
-												<a href="<?php echo $orderlink; ?>"><?php echo $fieldname; ?></a>
-												<?php echo $Backoffice->getSelectValues($tablename, $fieldname); ?>
+												<a href="<?php echo $orderlink; ?>"><?php echo $fieldname; ?></a><br>
+												<form action="<?php echo $filterlink; ?>" method="POST">
+													<?php echo $Backoffice->getFilterValues($tablename, $fieldname); ?>
+													<button>filter</button>
+												</form>
 											</th>
 											<?php
 										}

@@ -205,17 +205,29 @@ class Backoffice
         return $return_tables;
     }
     
-	public function getSelectValues($tablename, $fieldname)
+	public function getFilterValues($tablename, $fieldname)
+	{
+		// if a relation field, return a select.
+		$relparts = explode("_", $fieldname);
+		if (count($relparts) == 2) {
+			$extern_table = $relparts[0];
+			return $this->_getSelectValues($tablename, $fieldname);
+		} else {
+			// else, return an input search field.
+			return '<input name="search[' . $fieldname . ']" />';
+		}
+	}
+	
+	private function _getSelectValues($tablename, $fieldname)
 	{
 		$Database = $this->_machine->plugin("Database");
-		// to do... get from database just an array
 		$options = $Database->getDistinctValues($tablename, $fieldname);
 		$options_html = '';
 		foreach ($options as $option) {
 			$options_html .= '<option>' . $option . '</option>';
 		}	
 		
-		return '<select name="filter[][' . $fieldname . ']">' . $options_html . '</select>';
+		return '<select name="filter[' . $fieldname . ']">' . $options_html . '</select>';
 	}
 	
     /**
