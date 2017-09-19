@@ -296,12 +296,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/paooolino/Machine.git",
-                "reference": "48d92cea496d0201a9982bdf813ecefb439c4590"
+                "reference": "968d7ab1fa62711bdbfcb9b8bee309c96592719e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paooolino/Machine/zipball/48d92cea496d0201a9982bdf813ecefb439c4590",
-                "reference": "48d92cea496d0201a9982bdf813ecefb439c4590",
+                "url": "https://api.github.com/repos/paooolino/Machine/zipball/968d7ab1fa62711bdbfcb9b8bee309c96592719e",
+                "reference": "968d7ab1fa62711bdbfcb9b8bee309c96592719e",
                 "shasum": ""
             },
             "require": {
@@ -332,7 +332,7 @@
                 }
             ],
             "homepage": "https://github.com/paooolino/Machine",
-            "time": "2017-09-19 20:12:07"
+            "time": "2017-09-19 21:07:16"
         },
         {
             "name": "paragonie/random_compat",
