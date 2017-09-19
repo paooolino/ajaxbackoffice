@@ -48,7 +48,13 @@
 									<?php
 									foreach ($records as $id => $r) {
 										foreach ($r as $fieldname => $fieldvalue) {
-											?><th><?php echo $fieldname; ?></th><?php
+											$orderlink = $Backoffice->GetLink("/$tablename/$fieldname/updateordeorder/");
+											?>
+											<th>
+												<a href="<?php echo $orderlink; ?>"><?php echo $fieldname; ?></a>
+												<?php echo $Backoffice->getSelectValues($tablename, $fieldname); ?>
+											</th>
+											<?php
 										}
 										break;
 									}

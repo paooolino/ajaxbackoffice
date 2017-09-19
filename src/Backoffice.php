@@ -205,6 +205,19 @@ class Backoffice
         return $return_tables;
     }
     
+	public function getSelectValues($tablename, $fieldname)
+	{
+		$Database = $this->_machine->plugin("Database");
+		// to do... get from database just an array
+		$options = $Database->getDistinctValues($tablename, $fieldname);
+		$options_html = '';
+		foreach ($options as $option) {
+			$options_html .= '<option>' . $option . '</option>';
+		}	
+		
+		return '<select name="filter[][' . $fieldname . ']">' . $options_html . '</select>';
+	}
+	
     /**
      * Gets the first textual field in a table.
      *
@@ -271,20 +284,20 @@ class Backoffice
                 $tables = $this->filterTables($db->getTables());
             
                 $n = 50;
-                $records = $db->find($tablename, "LIMIT ?	OFFSET ?", [$n, ($p - 1) * $n]);
+                $records = $db->find($tablename, "LIMIT ? OFFSET ?", [$n, ($p - 1) * $n]);
                 $count = $db->countRecords($tablename, "");
                 $maxp = ceil($count / $n);
                 return [
-                "template" => __DIR__ . "/template/admin.php",
-                "data" => [
-                "p" => $p,
-                "maxp" => $maxp,
-                "count" => $count,
-                "tablename" => $tablename,
-                "tables" => $tables,
-                "records" => $records,
-                "count" => $count
-                ]
+                    "template" => __DIR__ . "/template/admin.php",
+                    "data" => [
+                        "p" => $p,
+                        "maxp" => $maxp,
+                        "count" => $count,
+                        "tablename" => $tablename,
+                        "tables" => $tables,
+                        "records" => $records,
+                        "count" => $count
+                    ]
                 ];
             }
         );
