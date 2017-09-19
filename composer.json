@@ -13,10 +13,14 @@
         }
     },
     "scripts": {
-        "phpcs": ["phpcs src", "phpcs plugins"],
-        "phpcbf": ["phpcbf src", "phpcbf plugins"],
+        "phpcs": ["phpcs src"],
+        "phpcbf": ["phpcbf src"],
 		"generatedoc": "php phpDocumentor.phar -d src,plugins -t docs",
 		"phpunit": "phpunit tests --whitelist src/Backoffice.php --coverage-html coverage",
 		"start": "php -S localhost:8000 -t example"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.0",
+        "phpunit/phpunit": "^5.7"
     }
 }
