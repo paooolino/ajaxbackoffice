@@ -205,12 +205,24 @@ class Backoffice
         return $return_tables;
     }
     
-    public function getFilterValues($tablename, $fieldname)
+    /**
+     * Return the HTML filter control for the provided field.
+     *
+	 * A filter control may be:
+	 *	- a simple text input
+	 *  - a select for joined fields
+	 *
+     * @param string $tablename
+     * @param string $fieldname
+     *
+     * @return string
+     */ 
+    public function getFilterControl($tablename, $fieldname)
     {
         // if a relation field, return a select.
         $relparts = explode("_", $fieldname);
         if (count($relparts) == 2) {
-            return $this->getSelectHtml($fieldname, "");
+            return $this->getSelectHtml($fieldname, "", "filter[" . $fieldname . "]");
         } else {
             // else, return an input search field.
             return '<input name="search[' . $fieldname . ']" />';
@@ -218,7 +230,7 @@ class Backoffice
     }
     
     /**
-     * Gets the HTML Select control for a joined field.
+     * Return the HTML Select control for a joined field.
      *
      * @param string $fieldname
      * @param string $fieldvalue The preselected value
@@ -226,7 +238,7 @@ class Backoffice
      *
      * @return string
      */ 
-    public function getSelectHtml($fieldname, $fieldvalue, $emptylabel="- Select -")
+    public function getSelectHtml($fieldname, $fieldvalue, $variablename=NULL, $emptylabel="- Select -")
     {
         $Database = $this->_machine->plugin("Database");
         
@@ -236,9 +248,10 @@ class Backoffice
         $options = $Database->find($extern_table, "ORDER BY $namefield", []);
         $options_html = '<option value="0">' . $emptylabel . '</option>';
         foreach ($options as $option) {
-            $options_html .= '<option ' . ($fieldvalue == $option->id ? "selected" : "") . ' value="' . $option->id . '">' . $option->{$namefield} . '</option>';
+            $options_html .= '<option' . ($fieldvalue == $option->id ? " selected " : " ") . 'value="' . $option->id . '">' . $option->{$namefield} . '</option>';
         }
-        return '<select name="' . $fieldname . '">' . $options_html . '</select>';
+		$variablename = $variablename ? $variablename : $fieldname;
+        return '<select name="' . $variablename . '">' . $options_html . '</select>';
     }
     
     /**

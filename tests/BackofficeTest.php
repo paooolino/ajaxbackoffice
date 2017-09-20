@@ -92,4 +92,17 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 		$response = $this->machine->run(true);
 		$this->assertContains('<td>AC/DC</td>', $response["body"]);
 	}
+	
+	public function testGetFilterControl()
+	{
+		$this->_requestAndSetup("GET", "/backoffice/");
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		
+		$html = $this->Backoffice->getFilterControl("artists", "name");
+		$this->assertEquals('<input name="search[name]" />', $html);
+		
+		$html = $this->Backoffice->getFilterControl("tracks", "mediatypes_id");
+		$this->assertContains('<select name="filter[mediatypes_id]"', $html);
+		$this->assertContains('<option value="5">AAC audio file</option>', $html);
+	}
 }

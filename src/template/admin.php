@@ -54,7 +54,7 @@
 											<th>
 												<a href="<?php echo $orderlink; ?>"><?php echo $fieldname; ?></a><br>
 												<form action="<?php echo $filterlink; ?>" method="POST">
-													<?php echo $Backoffice->getFilterValues($tablename, $fieldname); ?>
+													<?php echo $Backoffice->getFilterControl($tablename, $fieldname); ?>
 													<button>filter</button>
 												</form>
 											</th>
