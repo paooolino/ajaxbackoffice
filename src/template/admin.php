@@ -12,7 +12,7 @@
 			<div class="container">
 				<ul>	
 					<?php foreach ($tables as $t => $label) { ?>
-					<li class="<?php echo $t == $tablename ? "active" : ""; ?>"><a class="button" href="<?php echo $Backoffice->GetLink("/$t/list/1/"); ?>"><?php echo $label; ?></a></li>
+					<li class="<?php echo $t == $tablename ? "active" : ""; ?>"><a class="button" href="{{Link|Get|BACKOFFICE_LISTPAGE|<?php echo $t; ?>|1}}"><?php echo $label; ?></a></li>
 					<?php } ?>
 				</ul>
 			</div>
@@ -21,20 +21,20 @@
 			<?php if (isset($records)) { ?>
 			<section id="sectionlist">
 				<div class="buttonbar">
-					<a href="<?php echo $Backoffice->GetLink("/$tablename/list/1/"); ?>" class="buttonbar-item button minibutton">First</a>
+					<a href="{{Link|Get|BACKOFFICE_LISTPAGE|<?php echo $t; ?>|1}}" class="buttonbar-item button minibutton">First</a>
 					<a 
-						<?php if ($p > 1) { ?>href="<?php echo $Backoffice->GetLink("/$tablename/list/" . ($p - 1) . "/"); ?>"<?php } ?>
+						<?php if ($p > 1) { ?>href="{{Link|Get|BACKOFFICE_LISTPAGE|<?php echo $t; ?>|<?php echo $p - 1; ?>}}"<?php } ?>
 						class="buttonbar-item button minibutton <?php if ($p <= 1) { ?>disabled<?php } ?>">
 							Previous
 					</a>
 					<div class="buttonbar-item"><input value="<?php echo $p; ?>" /></div>
 					<div class="buttonbar-item minibutton">/ <?php echo $maxp; ?></div>
 					<a 
-						<?php if ($p < $maxp) { ?>href="<?php echo $Backoffice->GetLink("/$tablename/list/" . ($p + 1) . "/"); ?>"<?php } ?>
+						<?php if ($p < $maxp) { ?>href="{{Link|Get|BACKOFFICE_LISTPAGE|<?php echo $t; ?>|<?php echo $p + 1; ?>}}"<?php } ?>
 						class="buttonbar-item button minibutton <?php if ($p >= $maxp) { ?>disabled<?php } ?>">
 							Next
 					</a>
-					<a href="<?php echo $Backoffice->GetLink("/$tablename/list/" . ($maxp) . "/"); ?>" class="buttonbar-item button minibutton">Last</a>
+					<a href="{{Link|Get|BACKOFFICE_LISTPAGE|<?php echo $t; ?>|<?php echo $maxp; ?>}}" class="buttonbar-item button minibutton">Last</a>
 					<div class="buttonbar-item sep"></div>
 					<form action="<?php echo $Backoffice->GetLink("/api/record/$tablename/"); ?>" method="post">
 						<button class="buttonbar-item button minibutton">Add</button>

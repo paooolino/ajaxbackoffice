@@ -292,54 +292,50 @@ class Backoffice
         $machine = $this->_machine;
         $prefixdir = $this->_prefixDir;
         
-        // Backoffice Home
-        $machine->addPage(
-            $prefixdir . "/", function ($machine) {
-                $db = $machine->plugin("Database");
-                $tables = $this->filterTables($db->getTables());
-            
-                return [
-                "template" => __DIR__ . "/template/admin.php",
-                "data" => [
-                "tablename" => "",
-                "tables" => $tables
-                ]
-                ];
-            }
-        );
+		$Link = $machine->plugin("Link");
+		$Link->setRoute("BACKOFFICE_HOME", $prefixdir . "/");
+		$Link->setRoute("BACKOFFICE_ASSETS", $prefixdir . "/assets/{filename:.+}");
+		$Link->setRoute("BACKOFFICE_LISTPAGE", $prefixdir . "/{tablename}/list/{p}/");
+		
+        $machine->addPage($Link->getRoute("BACKOFFICE_HOME"), function ($machine) {
+			$db = $machine->plugin("Database");
+			$tables = $this->filterTables($db->getTables());
+		
+			return [
+				"template" => __DIR__ . "/template/admin.php",
+				"data" => [
+					"tablename" => "",
+					"tables" => $tables
+				]
+			];
+        });
 
-        // Backoffice Assets
-        $machine->addAction(
-            $prefixdir . "/assets/{filename:.+}", "GET", function ($machine, $filename) {
-                $serverpath = __DIR__ . "/template/" . $filename;
-                $machine->serve($serverpath);
-            }
-        );
+        $machine->addAction($Link->getRoute("BACKOFFICE_ASSETS"), "GET", function ($machine, $filename) {
+			$serverpath = __DIR__ . "/template/" . $filename;
+			$machine->serve($serverpath);
+        });
         
-        // Backoffice List page
-        $machine->addPage(
-            $prefixdir . "/{tablename}/list/{p}/", function ($machine, $tablename, $p) {
-                $db = $machine->plugin("Database");
-                $tables = $this->filterTables($db->getTables());
-            
-                $n = 50;
-                $records = $db->find($tablename, "LIMIT ? OFFSET ?", [$n, ($p - 1) * $n]);
-                $count = $db->countRecords($tablename, "");
-                $maxp = ceil($count / $n);
-                return [
-                    "template" => __DIR__ . "/template/admin.php",
-                    "data" => [
-                        "p" => $p,
-                        "maxp" => $maxp,
-                        "count" => $count,
-                        "tablename" => $tablename,
-                        "tables" => $tables,
-                        "records" => $records,
-                        "count" => $count
-                    ]
-                ];
-            }
-        );
+        $machine->addPage($Link->getRoute("BACKOFFICE_LISTPAGE"), function ($machine, $tablename, $p) {
+			$db = $machine->plugin("Database");
+			$tables = $this->filterTables($db->getTables());
+		
+			$n = 50;
+			$records = $db->find($tablename, "LIMIT ? OFFSET ?", [$n, ($p - 1) * $n]);
+			$count = $db->countRecords($tablename, "");
+			$maxp = ceil($count / $n);
+			return [
+				"template" => __DIR__ . "/template/admin.php",
+				"data" => [
+					"p" => $p,
+					"maxp" => $maxp,
+					"count" => $count,
+					"tablename" => $tablename,
+					"tables" => $tables,
+					"records" => $records,
+					"count" => $count
+				]
+			];
+        });
 
         $machine->addPage(
             $prefixdir . "/error/{errtype}/", function ($machine, $errtype) {
