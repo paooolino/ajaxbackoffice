@@ -365,20 +365,31 @@ class Backoffice
 		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "GET", function($machine, $tablename, $fieldname) {
 			// update cookie here
 			$data = $this->_cookieData;
-			print_r($data);
+
 			if (!isset($data[$tablename][$fieldname]["ORDER"])) {
 				$direction = "asc";
 			} else {
-				$direction = $data[$tablename][$fieldname]["ORDER"] == "asc" ? "desc" : "asc";
+				switch ($data[$tablename][$fieldname]["ORDER"]) {
+					case "asc":
+						$direction = "desc";
+						break;
+					case "desc":
+						$direction = "";
+						break;
+				}
 			}
 			
-			if (!isset($data[$tablename]))
-				$data[$tablename] = [];
-			
-			if (!isset($data[$tablename][$fieldname]))
-				$data[$tablename][$fieldname] = [];
-			
-			$data[$tablename][$fieldname]["ORDER"] = $direction;
+			if ($direction == "") {
+				unset($data[$tablename][$fieldname]["ORDER"]);
+			} else {
+				if (!isset($data[$tablename]))
+					$data[$tablename] = [];
+				
+				if (!isset($data[$tablename][$fieldname]))
+					$data[$tablename][$fieldname] = [];
+				
+				$data[$tablename][$fieldname]["ORDER"] = $direction;
+			}
 			
 			$machine->plugin("Backoffice")->setCookieData($data);
 			$machine->back();
