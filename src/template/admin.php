@@ -48,12 +48,10 @@
 									<?php
 									foreach ($records as $id => $r) {
 										foreach ($r as $fieldname => $fieldvalue) {
-											$orderlink = $Backoffice->GetLink("/$tablename/$fieldname/updateordeorder/");
-											$filterlink = $Backoffice->GetLink("/$tablename/$fieldname/updatefilter/");
 											?>
 											<th>
-												<a href="<?php echo $orderlink; ?>"><?php echo $fieldname; ?></a><br>
-												<form action="<?php echo $filterlink; ?>" method="POST">
+												<a href="{{Link|Get|BACKOFFICE_UPDATEORDER|<?php echo $tablename; ?>|<?php echo $fieldname; ?>}}"><?php echo $fieldname; ?></a><br>
+												<form action="{{Link|Get|BACKOFFICE_UPDATEFILTER|<?php echo $tablename; ?>|<?php echo $fieldname; ?>}}" method="POST">
 													<?php echo $Backoffice->getFilterControl($tablename, $fieldname); ?>
 													<button>filter</button>
 												</form>

@@ -6,11 +6,14 @@ class Backoffice
     private $_machine;
     private $_config;
     private $_prefixDir;
+	private $_cookieName;
+	private $_cookieData;
     
     public function __construct($machine)
     {
         $this->_machine = $machine;
         $this->_prefixDir = "";
+		$this->_cookieName = "xSaRoJrNsKNyZDOp";
     }
 
     /**
@@ -178,6 +181,7 @@ class Backoffice
     public function run($config_file, $prefixdir = "")
     {
         $this->_loadConfig($config_file);
+		$this->_loadCookie();
         $this->_setPrefixDir($prefixdir);
         $this->_setRoutes();
     }
@@ -254,6 +258,25 @@ class Backoffice
         return '<select name="' . $variablename . '">' . $options_html . '</select>';
     }
     
+	public function setCookieData($data)
+	{
+		$this->_cookieData = $data;
+		$this->_machine->setCookie(
+			$this->_cookieName,
+			json_encode($this->_cookieData),
+			time() + 60*60*24*30,
+			"/"
+		);
+	}
+	
+	private function _loadCookie()
+	{
+		$r = $this->_machine->getRequest();
+		if (isset($r["COOKIE"][$this->_cookieName])) {
+			$this->_cookieData = json_decode($r["COOKIE"][$this->_cookieName], true);
+		}
+	}
+	
     /**
      * Gets the first textual field in a table.
      *
@@ -296,6 +319,8 @@ class Backoffice
 		$Link->setRoute("BACKOFFICE_HOME", $prefixdir . "/");
 		$Link->setRoute("BACKOFFICE_ASSETS", $prefixdir . "/assets/{filename:.+}");
 		$Link->setRoute("BACKOFFICE_LISTPAGE", $prefixdir . "/{tablename}/list/{p}/");
+		$Link->setRoute("BACKOFFICE_UPDATEORDER", $prefixdir . "/{tablename}/{fieldname}/updateorder/");
+		$Link->setRoute("BACKOFFICE_UPDATEFILTER", $prefixdir . "/{tablename}/{fieldname}/updatefilter/");
 		
         $machine->addPage($Link->getRoute("BACKOFFICE_HOME"), function ($machine) {
 			$db = $machine->plugin("Database");
@@ -336,6 +361,32 @@ class Backoffice
 				]
 			];
         });
+		
+		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "GET", function($machine, $tablename, $fieldname) {
+			// update cookie here
+			$data = $this->_cookieData;
+			print_r($data);
+			if (!isset($data[$tablename][$fieldname]["ORDER"])) {
+				$direction = "asc";
+			} else {
+				$direction = $data[$tablename][$fieldname]["ORDER"] == "asc" ? "desc" : "asc";
+			}
+			
+			if (!isset($data[$tablename]))
+				$data[$tablename] = [];
+			
+			if (!isset($data[$tablename][$fieldname]))
+				$data[$tablename][$fieldname] = [];
+			
+			$data[$tablename][$fieldname]["ORDER"] = $direction;
+			
+			$machine->plugin("Backoffice")->setCookieData($data);
+			$machine->back();
+		});
+		
+		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "POST", function($machine, $tablename, $fieldname) {
+			// update cookie here
+		});
 
         $machine->addPage(
             $prefixdir . "/error/{errtype}/", function ($machine, $errtype) {
