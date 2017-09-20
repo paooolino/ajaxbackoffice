@@ -101,7 +101,7 @@ class Backoffice
                 $extern_name = $extern_bean->{$namefield};
                 //$url = $this->_machine->plugin("Link")->Get("/$extern_table/$fieldvalue/");
                 //$fieldvalue = '<a href="' . $url . '" class="relationlink">' . $fieldvalue . '</a> ' . $extern_name;
-                $fieldvalue = $fieldvalue . " (" . $extern_name . ")";
+                $fieldvalue = $fieldvalue . " | " . $extern_name;
             }
             return $fieldvalue;
           break;            
@@ -205,31 +205,42 @@ class Backoffice
         return $return_tables;
     }
     
-	public function getFilterValues($tablename, $fieldname)
-	{
-		// if a relation field, return a select.
-		$relparts = explode("_", $fieldname);
-		if (count($relparts) == 2) {
-			$extern_table = $relparts[0];
-			return $this->_getSelectValues($tablename, $fieldname);
-		} else {
-			// else, return an input search field.
-			return '<input name="search[' . $fieldname . ']" />';
-		}
-	}
-	
-	private function _getSelectValues($tablename, $fieldname)
-	{
-		$Database = $this->_machine->plugin("Database");
-		$options = $Database->getDistinctValues($tablename, $fieldname);
-		$options_html = '';
-		foreach ($options as $option) {
-			$options_html .= '<option>' . $option . '</option>';
-		}	
-		
-		return '<select name="filter[' . $fieldname . ']">' . $options_html . '</select>';
-	}
-	
+    public function getFilterValues($tablename, $fieldname)
+    {
+        // if a relation field, return a select.
+        $relparts = explode("_", $fieldname);
+        if (count($relparts) == 2) {
+            return $this->getSelectHtml($fieldname, "");
+        } else {
+            // else, return an input search field.
+            return '<input name="search[' . $fieldname . ']" />';
+        }
+    }
+    
+    /**
+     * Gets the HTML Select control for a joined field.
+     *
+     * @param string $fieldname
+     * @param string $fieldvalue The preselected value
+     * @param string $emptylabel The label for the empty value
+     *
+     * @return string
+     */ 
+    public function getSelectHtml($fieldname, $fieldvalue, $emptylabel="- Select -")
+    {
+        $Database = $this->_machine->plugin("Database");
+        
+        $relparts = explode("_", $fieldname);
+        $extern_table = $relparts[0];
+        $namefield = $this->_getFirstTextualField($extern_table);
+        $options = $Database->find($extern_table, "ORDER BY $namefield", []);
+        $options_html = '<option value="0">' . $emptylabel . '</option>';
+        foreach ($options as $option) {
+            $options_html .= '<option ' . ($fieldvalue == $option->id ? "selected" : "") . ' value="' . $option->id . '">' . $option->{$namefield} . '</option>';
+        }
+        return '<select name="' . $fieldname . '">' . $options_html . '</select>';
+    }
+    
     /**
      * Gets the first textual field in a table.
      *
@@ -268,6 +279,7 @@ class Backoffice
         $machine = $this->_machine;
         $prefixdir = $this->_prefixDir;
         
+        // Backoffice Home
         $machine->addPage(
             $prefixdir . "/", function ($machine) {
                 $db = $machine->plugin("Database");
@@ -283,6 +295,7 @@ class Backoffice
             }
         );
 
+        // Backoffice Assets
         $machine->addAction(
             $prefixdir . "/assets/{filename:.+}", "GET", function ($machine, $filename) {
                 $serverpath = __DIR__ . "/template/" . $filename;
@@ -290,6 +303,7 @@ class Backoffice
             }
         );
         
+        // Backoffice List page
         $machine->addPage(
             $prefixdir . "/{tablename}/list/{p}/", function ($machine, $tablename, $p) {
                 $db = $machine->plugin("Database");
@@ -360,7 +374,7 @@ class Backoffice
                 // list records of a table
                 $db = $machine->plugin("Database");
                 $data = [];
-                $data["records"] = $db->find($tablename, "LIMIT ?	OFFSET ?", [$n, ($p - 1) * $n]);
+                $data["records"] = $db->find($tablename, "LIMIT ?   OFFSET ?", [$n, ($p - 1) * $n]);
                 $data["count"] = $db->countRecords($tablename, "");
             
                 $machine->setResponseCode(200);
