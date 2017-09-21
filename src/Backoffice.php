@@ -87,6 +87,44 @@ class Backoffice
 		return "";
 	}
 	
+	/**
+	 * Return a new filter array, given the old and the new details array.
+	 *
+	 * @return array The new order array
+	 */
+	private function _getNewFilter($currentFilter, $field, $details)
+	{
+		$newFilter = [];
+		
+		$operator = $details[0];
+		$value = $details[1];
+		if (empty($currentFilter)) {
+			if (!empty($value)) {
+				$newFilter[] = [$field, $operator, $value];
+			} else {
+				// do nothing
+			}
+		} else {
+			foreach ($currentFilter as $filterItem) {
+				$i_name = $filterItem[0];
+				$i_operator = $filterItem[1];
+				$i_value = $filterItem[2];
+				if ($field == $i_name) {
+					if (!empty($value)) {
+						// overwrite the previous order
+						$newFilter[] = [$i_name, $operator, $value];
+					} else {
+						// do nothing
+					}
+				} else {
+					// re-add other fields filter
+					$newFilter[] = [$i_name, $i_operator, $i_value];
+				}
+			}
+		}
+		return $newFilter;
+	}
+	
     public function GetLink($params)
     {
         if (gettype($params) == "string") {
@@ -277,10 +315,10 @@ class Backoffice
         // if a relation field, return a select.
         $relparts = explode("_", $fieldname);
         if (count($relparts) == 2) {
-            return $this->getSelectHtml($fieldname, "", "filter[" . $fieldname . "]");
+            return $this->getSelectHtml($fieldname, "", "filter");
         } else {
             // else, return an input search field.
-            return '<input name="search[' . $fieldname . ']" />';
+            return '<input name="search" />';
         }
     }
     
@@ -449,18 +487,63 @@ class Backoffice
 			$machine->back();
 		});
 		
-		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "POST", function($machine, $tablename, $fieldname) {
-			// update cookie here
+		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEFILTER"), "POST", function($machine, $table, $field) {
+			// get the filter data from cookie
+			$r = $machine->getRequest();
+			$data = [];
+			if (isset($r["COOKIE"][$this->_filterCookieName])) {
+				$data = json_decode($r["COOKIE"][$this->_filterCookieName], true);
+			}
+			
+			// get the current filter array for this table
+			$currentFilter = [];
+			if (isset($data[$table])) {
+				$currentFilter = $data[$table];
+			}
+			
+			// get the new filter
+			$newFilterDetails = [];
+			if (isset($r["POST"]["search"])) {
+				$filtervalue = $r["POST"]["search"];
+				$newFilterDetails = ["contains", $filtervalue];
+			}
+			if (isset($r["POST"]["filter"])) {
+				$filtervalue = $r["POST"]["filter"];
+				$newFilterDetails = ["equals", $filtervalue];
+			}
+
+			// calculate the new filter array
+			$newFilterArray = $this->_getNewFilter($currentFilter, $field, $newFilterDetails);
+			
+			// merge in the data
+			if (empty($newFilterArray)) {
+				if (isset($data[$table])) {
+					unset($data[$table]);
+				}
+			} else {
+				$data[$table] = $newFilterArray;
+			}
+
+			// set the cookie
+			$machine->setCookie(
+				$this->_filterCookieName,
+				json_encode($data),
+				time() + (3600 * 24 * 30),
+				"/"
+			);
+			
+			// redirect
+			$machine->back();
 		});
 
         $machine->addPage(
             $prefixdir . "/error/{errtype}/", function ($machine, $errtype) {
                 $r = $machine->getRequest();
                 return [
-                "template" => __DIR__ . "/template/adminerror.php",
-                "data" => [
-                "errtype" => $errtype
-                ]
+                    "template" => __DIR__ . "/template/adminerror.php",
+                    "data" => [
+                        "errtype" => $errtype
+                    ]
                 ];
             }
         );

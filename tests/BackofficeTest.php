@@ -28,6 +28,103 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 		$this->machine->plugin("Database")->setupSqlite("./web/sample.db");
 	}
 	
+	public function testFilterCookieNewContains()
+	{
+		$this->_requestAndSetup("POST", "/backoffice/tracks/name/updatefilter/", [
+			"POST" => [
+				"search" => "Rock"
+			]
+		]);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+		
+		$expected = [
+			"tracks" => [
+				["name", "contains", "Rock"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals("l5vX0SeUND31c6hl", $response["cookies"][0][0]);
+		$this->assertEquals($expected, $cookie);
+	}
+	
+	public function testFilterCookieNewEquals()
+	{
+		$this->_requestAndSetup("POST", "/backoffice/tracks/genres_id/updatefilter/", [
+			"POST" => [
+				"filter" => "1"
+			]
+		]);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+		
+		$expected = [
+			"tracks" => [
+				["genres_id", "equals", "1"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals("l5vX0SeUND31c6hl", $response["cookies"][0][0]);
+		$this->assertEquals($expected, $cookie);
+	}
+	
+	public function testFilterCookieRemove()
+	{
+		$this->_requestAndSetup("POST", "/backoffice/tracks/genres_id/updatefilter/", [
+			"COOKIE" => [
+				"l5vX0SeUND31c6hl" => json_encode([
+					"tracks" => [
+						["name", "contains", "rock"],
+						["genres_id", "equals", "1"]
+					]
+				])
+			],
+			"POST" => [
+				"filter" => "0"
+			]
+		]);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+		
+		$expected = [
+			"tracks" => [
+				["name", "contains", "rock"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals("l5vX0SeUND31c6hl", $response["cookies"][0][0]);
+		$this->assertEquals($expected, $cookie);
+	}
+	
+	public function testFilterCookieOverwrite()
+	{
+		$this->_requestAndSetup("POST", "/backoffice/tracks/name/updatefilter/", [
+			"COOKIE" => [
+				"l5vX0SeUND31c6hl" => json_encode([
+					"tracks" => [
+						["name", "contains", "rock"],
+						["genres_id", "equals", "1"]
+					]
+				])
+			],
+			"POST" => [
+				"search" => "King"
+			]
+		]);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+		
+		$expected = [
+			"tracks" => [
+				["name", "contains", "King"],
+				["genres_id", "equals", "1"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals("l5vX0SeUND31c6hl", $response["cookies"][0][0]);
+		$this->assertEquals($expected, $cookie);
+	}
+	
 	public function testOrderCookieNew()
 	{
 		$this->_requestAndSetup("GET", "/backoffice/tracks/name/updateorder/");
@@ -172,10 +269,10 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
 		
 		$html = $this->Backoffice->getFilterControl("artists", "name");
-		$this->assertEquals('<input name="search[name]" />', $html);
+		$this->assertEquals('<input name="search" />', $html);
 		
 		$html = $this->Backoffice->getFilterControl("tracks", "mediatypes_id");
-		$this->assertContains('<select name="filter[mediatypes_id]"', $html);
+		$this->assertContains('<select name="filter"', $html);
 		$this->assertContains('<option value="5">AAC audio file</option>', $html);
 	}
 }
