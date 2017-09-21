@@ -9,22 +9,95 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 {
 	private $machine;
 	private $Backoffice;
+	private $Link;
 	
-	private function _requestAndSetup($method, $path)
+	private function _requestAndSetup($method, $path, $mergeReq=[])
 	{
-		$req = [
+		$req = array_merge_recursive([
 			"SERVER" => [
 				"REQUEST_METHOD" => $method,
 				"REQUEST_URI" => $path,
 				"HTTP_HOST" => "localhost:8000"
 			]
-		];
+		], $mergeReq);
 		
 		$this->machine = new \Machine\Machine($req);
-		$this->machine->addPlugin("Link");
+		$this->Link = $this->machine->addPlugin("Link");
 		$this->machine->addPlugin("Database");
 		$this->Backoffice = $this->machine->addPlugin("Backoffice");
 		$this->machine->plugin("Database")->setupSqlite("./web/sample.db");
+	}
+	
+	public function testOrderCookieNew()
+	{
+		$this->_requestAndSetup("GET", "/backoffice/tracks/name/updateorder/");
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+		
+		$expected = [
+			"tracks" => [
+				["name", "asc"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals($expected, $cookie);
+	}
+	
+	public function testOrderCookieAscToDesc()
+	{
+		$addReq = [
+			"COOKIE" => [
+				"xSaRoJrNsKNyZDOp" => json_encode([
+					"tracks" => [
+						["composer", "asc"],
+						["name", "asc"]
+					]
+				])
+			]
+		];
+		$this->_requestAndSetup("GET", "/backoffice/tracks/name/updateorder/", $addReq);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+
+		$expected = [
+			"tracks" => [
+				["composer", "asc"],
+				["name", "desc"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals($expected, $cookie);
+	}
+	
+	public function testOrderCookieDescToEmpty()
+	{
+		$addReq = [
+			"COOKIE" => [
+				"xSaRoJrNsKNyZDOp" => json_encode([
+					"genres" => [
+						["id", "asc"]
+					],
+					"tracks" => [
+						["composer", "desc"],
+						["name", "asc"]
+					]
+				])
+			]
+		];
+		$this->_requestAndSetup("GET", "/backoffice/tracks/composer/updateorder/", $addReq);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+
+		$expected = [
+			"genres" => [
+				["id", "asc"]
+			],
+			"tracks" => [
+				["name", "asc"]
+			]
+		];
+		$cookie = json_decode($response["cookies"][0][1], true);
+		$this->assertEquals($expected, $cookie);
 	}
 	
 	public function testRenderTemplate()

@@ -6,14 +6,15 @@ class Backoffice
     private $_machine;
     private $_config;
     private $_prefixDir;
-	private $_cookieName;
-	private $_cookieData;
+	private $_orderCookieName;
+	private $_filterCookieName;
     
     public function __construct($machine)
     {
         $this->_machine = $machine;
         $this->_prefixDir = "";
-		$this->_cookieName = "xSaRoJrNsKNyZDOp";
+		$this->_orderCookieName = "xSaRoJrNsKNyZDOp";
+		$this->_filterCookieName = "l5vX0SeUND31c6hl";
     }
 
     /**
@@ -35,6 +36,57 @@ class Backoffice
         }
     }
 
+	/**
+	 * Return a new order array, given the old and the name, direction to set.
+	 *
+	 * @return array The new order array
+	 */
+	private function _getNewOrder($currentOrder, $name, $direction)
+	{
+		$newOrder = [];
+		if (empty($currentOrder)) {
+			if ($direction != "") {
+				$newOrder[] = [$name, $direction];
+			} else {
+				// do nothing
+			}
+		} else {
+			foreach ($currentOrder as $orderItem) {
+				$i_name = $orderItem[0];
+				$i_direction = $orderItem[1];
+				if ($name == $i_name) {
+					if ($direction != "") {
+						// overwrite the previous order
+						$newOrder[] = [$i_name, $direction];
+					} else {
+						// do nothing
+					}
+				} else {
+					// re-add other fields order
+					$newOrder[] = [$i_name, $i_direction];
+				}
+			}
+		}
+		return $newOrder;
+	}
+	
+	/**
+	 * Return the current direction for a field given the order array.
+	 *
+	 * @return string
+	 */
+	private function _getOrderDirection($orderArray, $name)
+	{
+		foreach ($orderArray as $orderItem) {
+			$i_name = $orderItem[0];
+			$i_direction = $orderItem[1];
+			if ($i_name == $name) {
+				return $i_direction;
+			}
+		}
+		return "";
+	}
+	
     public function GetLink($params)
     {
         if (gettype($params) == "string") {
@@ -181,7 +233,6 @@ class Backoffice
     public function run($config_file, $prefixdir = "")
     {
         $this->_loadConfig($config_file);
-		$this->_loadCookie();
         $this->_setPrefixDir($prefixdir);
         $this->_setRoutes();
     }
@@ -257,25 +308,6 @@ class Backoffice
 		$variablename = $variablename ? $variablename : $fieldname;
         return '<select name="' . $variablename . '">' . $options_html . '</select>';
     }
-    
-	public function setCookieData($data)
-	{
-		$this->_cookieData = $data;
-		$this->_machine->setCookie(
-			$this->_cookieName,
-			json_encode($this->_cookieData),
-			time() + 60*60*24*30,
-			"/"
-		);
-	}
-	
-	private function _loadCookie()
-	{
-		$r = $this->_machine->getRequest();
-		if (isset($r["COOKIE"][$this->_cookieName])) {
-			$this->_cookieData = json_decode($r["COOKIE"][$this->_cookieName], true);
-		}
-	}
 	
     /**
      * Gets the first textual field in a table.
@@ -362,36 +394,58 @@ class Backoffice
 			];
         });
 		
-		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "GET", function($machine, $tablename, $fieldname) {
-			// update cookie here
-			$data = $this->_cookieData;
+		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "GET", function($machine, $table, $field) {
+			// get the order data from cookie
+			$r = $machine->getRequest();
+			$data = [];
+			if (isset($r["COOKIE"][$this->_orderCookieName])) {
+				$data = json_decode($r["COOKIE"][$this->_orderCookieName], true);
+			}
+			
+			// get the current order array for this table
+			$currentOrder = [];
+			if (isset($data[$table])) {
+				$currentOrder = $data[$table];
+			}
+			
+			// get the new direction
+			$newDirection = "";
+			$currentDirection = $this->_getOrderDirection($currentOrder, $field);
+			switch ($currentDirection) {
+				case "":
+					$newDirection = "asc";
+					break;
+				case "asc":
+					$newDirection = "desc";
+					break;
+				case "desc":
+					$newDirection = "";
+					break;
+				default:
+					$newDirection = "";
+			}
+			
+			// calculate the new order array
+			$newOrder = $this->_getNewOrder($currentOrder, $field, $newDirection);
 
-			if (!isset($data[$tablename][$fieldname]["ORDER"])) {
-				$direction = "asc";
-			} else {
-				switch ($data[$tablename][$fieldname]["ORDER"]) {
-					case "asc":
-						$direction = "desc";
-						break;
-					case "desc":
-						$direction = "";
-						break;
+			// merge in the data
+			if (empty($newOrder)) {
+				if (isset($data[$table])) {
+					unset($data[$table]);
 				}
-			}
-			
-			if ($direction == "") {
-				unset($data[$tablename][$fieldname]["ORDER"]);
 			} else {
-				if (!isset($data[$tablename]))
-					$data[$tablename] = [];
-				
-				if (!isset($data[$tablename][$fieldname]))
-					$data[$tablename][$fieldname] = [];
-				
-				$data[$tablename][$fieldname]["ORDER"] = $direction;
+				$data[$table] = $newOrder;
 			}
 			
-			$machine->plugin("Backoffice")->setCookieData($data);
+			// set the cookie
+			$machine->setCookie(
+				$this->_orderCookieName,
+				json_encode($data),
+				time() + (3600 * 24 * 30),
+				"/"
+			);
+			
+			// redirect
 			$machine->back();
 		});
 		
