@@ -27,7 +27,7 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 		$this->Backoffice = $this->machine->addPlugin("Backoffice");
 		$this->machine->plugin("Database")->setupSqlite("./web/sample.db");
 	}
-	
+		
 	public function testFilterCookieNewContains()
 	{
 		$this->_requestAndSetup("POST", "/backoffice/tracks/name/updatefilter/", [
@@ -274,5 +274,29 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 		$html = $this->Backoffice->getFilterControl("tracks", "mediatypes_id");
 		$this->assertContains('<select name="filter"', $html);
 		$this->assertContains('<option value="5">AAC audio file</option>', $html);
+	}
+	
+	public function testRenderOrderedFilteredList()
+	{
+		$adds = [
+			"COOKIE" => [
+				// order
+				"xSaRoJrNsKNyZDOp" => json_encode([
+					"tracks" => [
+						["id", "desc"]
+					]
+				]),
+				// filter
+				"l5vX0SeUND31c6hl" => json_encode([
+					"tracks" => [
+						["albums_id", "equals", "4"]
+					]
+				])
+			],
+		];
+		$this->_requestAndSetup("GET", "/backoffice/tracks/list/1/", $adds);
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");
+		$response = $this->machine->run(true);
+		$this->assertContains('<tr data-count="1" id="row22">', $response["body"]);
 	}
 }

@@ -87,6 +87,81 @@ class Backoffice
 		return "";
 	}
 	
+	private function _getFilterDataFromCookie()
+	{
+		$r = $this->_machine->getRequest();
+		$data = [];
+		if (isset($r["COOKIE"][$this->_filterCookieName])) {
+			$data = json_decode($r["COOKIE"][$this->_filterCookieName], true);
+		}
+		return $data;
+	}
+	
+	private function _getOrderDataFromCookie()
+	{
+		$r = $this->_machine->getRequest();
+		$data = [];
+		if (isset($r["COOKIE"][$this->_orderCookieName])) {
+			$data = json_decode($r["COOKIE"][$this->_orderCookieName], true);
+		}
+		return $data;
+	}
+	
+	private function _getListQueryFilterPart($tablename, $cookiedata)
+	{
+		$query = "";
+		$data = [];
+
+		if (isset($cookiedata[$tablename])) {
+			$queryparts = [];
+			foreach ($cookiedata[$tablename] as $cookie) {
+				$field = $cookie[0];
+				$operator = $cookie[1];
+				$value = $cookie[2];
+				
+				$q = $field;
+				if ($operator == "equals") {
+					$q .= " = ?";
+					$data[] = $value;
+				}
+				if ($operator == "contains") {
+					$q .= ' LIKE ?';
+					$data[] = "%" . $value . "%";
+				}
+				$queryparts[] = $q;
+			}
+			$query = " WHERE " . implode(" AND ", $queryparts);
+		}
+
+		return [
+			"query" => $query,
+			"data" => $data
+		];
+	}
+	
+	private function _getListQueryOrderPart($tablename, $cookiedata)
+	{
+		$query = "";
+		$data = [];
+		
+		if (isset($cookiedata[$tablename])) {
+			$queryparts = [];
+			foreach ($cookiedata[$tablename] as $cookie) {
+				$field = $cookie[0];
+				$direction = $cookie[1];
+				
+				$q = $field . " " . $direction;
+				$queryparts[] = $q;
+			}
+			$query = " ORDER BY " . implode(", ", $queryparts);
+		}		
+		
+		return [
+			"query" => $query,
+			"data" => $data
+		];
+	}
+	
 	/**
 	 * Return a new filter array, given the old and the new details array.
 	 *
@@ -415,7 +490,18 @@ class Backoffice
 			$tables = $this->filterTables($db->getTables());
 		
 			$n = 50;
-			$records = $db->find($tablename, "LIMIT ? OFFSET ?", [$n, ($p - 1) * $n]);
+			
+			$filterPart = $this->_getListQueryFilterPart($tablename, $this->_getFilterDataFromCookie());
+			$orderPart = $this->_getListQueryOrderPart($tablename, $this->_getOrderDataFromCookie());
+			$query = $filterPart["query"] . " " . $orderPart["query"] . " LIMIT ? OFFSET ?";
+			$records = $db->find($tablename, $query, 
+				array_merge(
+					$filterPart["data"],
+					$orderPart["data"],
+					[$n, ($p - 1) * $n]
+				)
+			);
+			
 			$count = $db->countRecords($tablename, "");
 			$maxp = ceil($count / $n);
 			return [
@@ -433,12 +519,10 @@ class Backoffice
         });
 		
 		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEORDER"), "GET", function($machine, $table, $field) {
+			$r = $this->_machine->getRequest();
+			
 			// get the order data from cookie
-			$r = $machine->getRequest();
-			$data = [];
-			if (isset($r["COOKIE"][$this->_orderCookieName])) {
-				$data = json_decode($r["COOKIE"][$this->_orderCookieName], true);
-			}
+			$data = $this->_getOrderDataFromCookie();
 			
 			// get the current order array for this table
 			$currentOrder = [];
@@ -488,13 +572,10 @@ class Backoffice
 		});
 		
 		$machine->addAction($Link->getRoute("BACKOFFICE_UPDATEFILTER"), "POST", function($machine, $table, $field) {
-			// get the filter data from cookie
-			$r = $machine->getRequest();
-			$data = [];
-			if (isset($r["COOKIE"][$this->_filterCookieName])) {
-				$data = json_decode($r["COOKIE"][$this->_filterCookieName], true);
-			}
+			$r = $this->_machine->getRequest();
 			
+			// get the filter data from cookie
+			$data = $this->_getFilterDataFromCookie();
 			// get the current filter array for this table
 			$currentFilter = [];
 			if (isset($data[$table])) {

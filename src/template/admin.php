@@ -64,29 +64,31 @@
 								</tr>
 							</thead>
 							<tbody>
+								<?php $count = 1; ?>
 								<?php foreach($records as $id => $r) { ?>
-								<tr id="row<?php echo $id;?>">
-									<?php 
-									$first = true;
-									foreach ($r as $fieldname => $fieldvalue) {
-										if ($first) {
-											?>
-											<td class="first">
-												<a href="<?php echo $Backoffice->GetLink("/$tablename/" . $fieldvalue . "/"); ?>" class="button minibutton button100">
-													<?php echo $fieldvalue; ?>
-												</a>
-											</td>
-											<?php
-											$first = false;
-										} else {
-											$content = $Backoffice->renderFieldInList($tablename, $fieldname, $fieldvalue);
-											?>
-											<td><?php echo $content; ?></td>
-											<?php
-										}
-									} 
-									?>
-								</tr>
+									<tr data-count="<?php echo $count; ?>" id="row<?php echo $id;?>">
+										<?php 
+										$first = true;
+										foreach ($r as $fieldname => $fieldvalue) {
+											if ($first) {
+												?>
+												<td class="first">
+													<a href="<?php echo $Backoffice->GetLink("/$tablename/" . $fieldvalue . "/"); ?>" class="button minibutton button100">
+														<?php echo $fieldvalue; ?>
+													</a>
+												</td>
+												<?php
+												$first = false;
+											} else {
+												$content = $Backoffice->renderFieldInList($tablename, $fieldname, $fieldvalue);
+												?>
+												<td><?php echo $content; ?></td>
+												<?php
+											}
+										} 
+										?>
+									</tr>
+									<?php $count++; ?>
 								<?php } ?>
 							</tbody>
 						</table>
