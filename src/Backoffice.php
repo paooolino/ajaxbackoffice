@@ -87,6 +87,16 @@ class Backoffice
 		return "";
 	}
 	
+	/**
+	 * Get the filter data.
+	 *
+	 * Filter data is written in the cookie with the following format:
+	 *    {<table_name>:[[<field_name>,<operator>,<value>], [...]]}
+	 * example:
+	 *    {"albums":[["artists_id","equals","1"]]}
+	 *
+	 * @return array The filter data
+	 */
 	private function _getFilterDataFromCookie()
 	{
 		$r = $this->_machine->getRequest();
@@ -95,6 +105,34 @@ class Backoffice
 			$data = json_decode($r["COOKIE"][$this->_filterCookieName], true);
 		}
 		return $data;
+	}
+	
+	/**
+	 * Given a filter array, merge the global filter data defined in config
+	 *
+	 * @return Array The new filter array considering also global filter
+	 */
+	private function _addGlobalFilter($tablename, $filterArray)
+	{
+		// retrieve the table fields list
+		$Database = $this->_machine->plugin("Database");
+		$fields = $Database->getFields($tablename);
+		
+		// for each table in the globalfilter
+		foreach ($this->_config["globalfilter"] as $filtertable => $infos) {
+			// get the external key field name
+			$fieldname = $filtertable . "_id";
+			// check if the field exists in the table
+			if (in_array($fieldname, array_keys($fields))) {
+				// add the filter in the existent filterArray
+				$filter = [$fieldname, "equals", $infos["default_value"]];
+				if (!isset($filterArray[$tablename])) {
+					$filterArray[$tablename] = [];
+				}
+				array_push($filterArray[$tablename], $filter);
+			}
+		}
+		return $filterArray;
 	}
 	
 	private function _getOrderDataFromCookie()
@@ -107,6 +145,14 @@ class Backoffice
 		return $data;
 	}
 	
+	/**
+	 * Given the filter data array, build the query part and the binded data array
+	 *
+	 * @param $tablename String The table name
+	 * @param $cookiedata Array The filter data
+	 *
+	 * @return Array An array with "query" and "data" keys
+	 */
 	private function _getListQueryFilterPart($tablename, $cookiedata)
 	{
 		$query = "";
@@ -491,7 +537,8 @@ class Backoffice
 		
 			$n = 50;
 			
-			$filterPart = $this->_getListQueryFilterPart($tablename, $this->_getFilterDataFromCookie());
+			$filterData = $this->_addGlobalFilter($tablename, $this->_getFilterDataFromCookie());
+			$filterPart = $this->_getListQueryFilterPart($tablename, $filterData);
 			$orderPart = $this->_getListQueryOrderPart($tablename, $this->_getOrderDataFromCookie());
 			$query = $filterPart["query"] . " " . $orderPart["query"] . " LIMIT ? OFFSET ?";
 			$records = $db->find($tablename, $query, 
@@ -512,8 +559,7 @@ class Backoffice
 					"count" => $count,
 					"tablename" => $tablename,
 					"tables" => $tables,
-					"records" => $records,
-					"count" => $count
+					"records" => $records
 				]
 			];
         });

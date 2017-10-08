@@ -1,4 +1,9 @@
 {
+	"globalfilter": {
+		"artists": {
+			"default_value": 1
+		}
+	},
 	"fields": {
 		"artists": {
 			"picture": {

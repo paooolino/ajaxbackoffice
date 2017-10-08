@@ -227,6 +227,15 @@ class BackofficeTest extends \PHPUnit_Framework_TestCase
 		$this->assertContains('<li class=""><a class="button" href="//localhost:8000/backoffice/customers/list/1/">customers</a></li>', $response["body"]);
 	}
 	
+	public function testGlobalFilter() 
+	{
+		$this->_requestAndSetup("GET", "/backoffice/albums/list/1/");
+		$this->Backoffice->run("./tests/config-test.json", "/backoffice");	
+		$response = $this->machine->run(true);
+		$substr = '<tr data-count=';
+		$this->assertEquals(2, substr_count($response["body"], $substr));	
+	}
+	
 	public function testFilterTables()
 	{
 		$this->_requestAndSetup("GET", "/backoffice/");
